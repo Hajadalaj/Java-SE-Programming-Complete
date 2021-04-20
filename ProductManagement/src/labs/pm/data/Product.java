@@ -26,7 +26,7 @@ import static labs.pm.data.Rating.*;
  *
  * @author hajadalaj
  */
-public abstract class Product {
+public abstract class Product implements Rateable<Product> {
 
     public static final BigDecimal DISCOUNT_RATE = BigDecimal.valueOf(0.1);
     private int id;
@@ -77,23 +77,27 @@ public abstract class Product {
 
     }
 
+    @Override
     public Rating getRating() {
         return rating;
     }
 
-    public abstract Product applyRating(Rating newRating) ;
+//    public abstract Product applyRating(Rating newRating) ;
 //    {
 //        return new Product(this.id, this.name, this.price, newRating);
 //
 //    }
-    
-    public LocalDate getBestbefore(){
+    public LocalDate getBestbefore() {
         return LocalDate.now();
+    }
+
+    public boolean isAlcoholic() {
+        return false;
     }
 
     @Override
     public String toString() {
-        return id + ", " + name + ", " + price+ ", " + getDiscount() + ", " + rating.getStars();
+        return id + ", " + name + ", " + price + ", " + getDiscount() + ", " + rating.getStars();
     }
 
     @Override
@@ -105,16 +109,14 @@ public abstract class Product {
 
     @Override
     public boolean equals(Object obj) {
-        if(this == obj){
-            return true;            
+        if (this == obj) {
+            return true;
         }
-        if(obj instanceof Product) {
-            final Product other = (Product)obj;
+        if (obj instanceof Product) {
+            final Product other = (Product) obj;
             return this.id == other.id && Objects.equals(this.name, other.name);
         }
         return false;
     }
-    
-    
 
 }
