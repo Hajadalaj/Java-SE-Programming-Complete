@@ -18,13 +18,15 @@ package labs.pm.data;
 
 import java.math.BigDecimal;
 import static java.math.RoundingMode.HALF_UP;
+import java.time.LocalDate;
+import java.util.Objects;
 import static labs.pm.data.Rating.*;
 
 /**
  *
  * @author hajadalaj
  */
-public class Product {
+public abstract class Product {
 
     public static final BigDecimal DISCOUNT_RATE = BigDecimal.valueOf(0.1);
     private int id;
@@ -32,18 +34,18 @@ public class Product {
     private BigDecimal price;
     private Rating rating;
 
-    public Product() {
+    Product() {
         this(0, "no name", BigDecimal.ZERO);
     }
 
-    public Product(int id, String name, BigDecimal price, Rating rating) {
+    Product(int id, String name, BigDecimal price, Rating rating) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.rating = rating;
     }
 
-    public Product(int id, String name, BigDecimal price) {
+    Product(int id, String name, BigDecimal price) {
         this(id, name, price, NOT_RATED);
 
     }
@@ -79,9 +81,40 @@ public class Product {
         return rating;
     }
 
-    public Product applyRating(Rating newRating) {
-        return new Product(this.id, this.name, this.price, newRating);
-
+    public abstract Product applyRating(Rating newRating) ;
+//    {
+//        return new Product(this.id, this.name, this.price, newRating);
+//
+//    }
+    
+    public LocalDate getBestbefore(){
+        return LocalDate.now();
     }
+
+    @Override
+    public String toString() {
+        return id + ", " + name + ", " + price+ ", " + getDiscount() + ", " + rating.getStars();
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 31 * hash + this.id;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj){
+            return true;            
+        }
+        if(obj instanceof Product) {
+            final Product other = (Product)obj;
+            return this.id == other.id && Objects.equals(this.name, other.name);
+        }
+        return false;
+    }
+    
+    
 
 }
