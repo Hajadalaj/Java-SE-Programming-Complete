@@ -87,7 +87,7 @@ public abstract class Product implements Rateable<Product> {
 //        return new Product(this.id, this.name, this.price, newRating);
 //
 //    }
-    public LocalDate getBestbefore() {
+    public LocalDate getBestBefore() {
         return LocalDate.now();
     }
 
@@ -114,7 +114,7 @@ public abstract class Product implements Rateable<Product> {
         }
         if (obj instanceof Product) {
             final Product other = (Product) obj;
-            return this.id == other.id && Objects.equals(this.name, other.name);
+            return this.id == other.id;// && Objects.equals(this.name, other.name);
         }
         return false;
     }

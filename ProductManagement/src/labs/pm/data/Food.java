@@ -37,6 +37,7 @@ public final class Food extends Product {
      *
      * @return the value of bestBefore
      */
+    @Override
     public LocalDate getBestBefore() {
         return bestBefore;
     }
