@@ -24,11 +24,13 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 /**
  *
@@ -36,22 +38,37 @@ import java.util.ResourceBundle;
  */
 public class ProductManager {
 
-    private Locale locale;
-    private ResourceBundle resources;
-    private DateTimeFormatter dateFormat;
-    private NumberFormat moneyFormat;
-
     private Map<Product, List<Review>> products = new HashMap();
+    private ResourceFormatter formatter;
+    private static Map<String, ResourceFormatter> formatters
+            = Map.of("en-GB", new ResourceFormatter(Locale.UK),
+                    "en-US", new ResourceFormatter(Locale.US),
+                    "fr-FR", new ResourceFormatter(Locale.FRANCE),
+                    "es-ES", new ResourceFormatter(new Locale("es","ES")),
+                    "pt-BR", new ResourceFormatter(new Locale("pt","BR")));
 
 //    private Product product;
 //    private Review[] reviews = new Review[5];
     public ProductManager(Locale locale) {
-        this.locale = locale;
-        resources = ResourceBundle.getBundle("labs.pm.data.resources", locale);
-        dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).localizedBy(locale);
-        moneyFormat = NumberFormat.getCurrencyInstance(locale);
+        this(locale.toLanguageTag());
+//        this.locale = locale;
+//        resources = ResourceBundle.getBundle("labs.pm.data.resources", locale);
+//        dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).localizedBy(locale);
+//        moneyFormat = NumberFormat.getCurrencyInstance(locale);
     }
 
+    public ProductManager(String languageTag) {
+        changeLocale(languageTag);
+    }
+
+    private void changeLocale(String languageTag) {
+        formatter = formatters.getOrDefault(languageTag, formatters.get("pt-BR"));
+    }
+    
+    public static Set<String> getSupportedLocales(){
+        return formatters.keySet();
+    }
+    
     public Product createProduct(int id, String name, BigDecimal price, Rating rating, LocalDate bestBefore) {
         Product product = new Food(id, name, price, rating, bestBefore);
         products.putIfAbsent(product, new ArrayList<>());
@@ -63,7 +80,7 @@ public class ProductManager {
         products.putIfAbsent(product, new ArrayList<>());
         return product;
     }
-    
+
     public Product reviewProduct(int id, Rating rating, String comments) {
         return reviewProduct(findProduct(id), rating, comments);
     }
@@ -104,32 +121,29 @@ public class ProductManager {
     public void printProductReport(Product product) {
         List<Review> reviews = products.get(product);
         StringBuilder txt = new StringBuilder();
-        if (product instanceof Food) {
-            txt.append(MessageFormat.format(resources.getString("food"),
-                    product.getName(),
-                    moneyFormat.format(product.getPrice()),
-                    product.getRating().getStars(),
-                    dateFormat.format(product.getBestBefore())));
+        txt.append(formatter.formatProduct(product));
             txt.append('\n');
-        } else if (product instanceof Drink) {
-            txt.append(MessageFormat.format(resources.getString("drink"),
-                    product.getName(),
-                    moneyFormat.format(product.getPrice()),
-                    product.getRating().getStars(),
-                    product.isAlcoholic()));
-            txt.append('\n');
-        }
+        
         if (reviews.isEmpty()) {
-            txt.append((resources.getString("no.reviewed")));
+            txt.append(formatter.getText("no.reviewed"));
             txt.append('\n');
         } else {
             Collections.sort(reviews);
             for (Review review : reviews) {
-                txt.append(MessageFormat.format(resources.getString("review"),
-                        review.getRating().getStars(),
-                        review.getComments()));
+                txt.append(formatter.formatReview(review));
                 txt.append('\n');
             }
+        }
+        System.out.println(txt);
+    }
+    
+    public void printProducts(Comparator<Product> sorter){
+        List<Product> productList = new ArrayList<>(products.keySet());
+        productList.sort(sorter);
+        StringBuilder txt = new StringBuilder();
+        for (Product product : productList) {
+            txt.append(formatter.formatProduct(product));
+            txt.append('\n');
         }
         System.out.println(txt);
     }
@@ -142,4 +156,48 @@ public class ProductManager {
         }
         return null;
     }
+
+    private static class ResourceFormatter {
+
+        private Locale locale;
+        private ResourceBundle resources;
+        private DateTimeFormatter dateFormat;
+        private NumberFormat moneyFormat;
+
+        private ResourceFormatter(Locale locale) {
+            this.locale = locale;
+            resources = ResourceBundle.getBundle("labs.pm.data.resources", locale);
+            dateFormat = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).localizedBy(locale);
+            moneyFormat = NumberFormat.getCurrencyInstance(locale);
+        }
+
+        private String formatProduct(Product product) {
+            String message = null;
+            if (product instanceof Food) {
+                message = MessageFormat.format(resources.getString("food"),
+                        product.getName(),
+                        moneyFormat.format(product.getPrice()),
+                        product.getRating().getStars(),
+                        dateFormat.format(product.getBestBefore()));
+            } else if (product instanceof Drink) {
+                message = MessageFormat.format(resources.getString("drink"),
+                        product.getName(),
+                        moneyFormat.format(product.getPrice()),
+                        product.getRating().getStars(),
+                        product.isAlcoholic());
+            }
+            return message;
+        }
+
+        private String formatReview(Review review) {
+            return MessageFormat.format(resources.getString("review"),
+                    review.getRating().getStars(),
+                    review.getComments());
+        }
+
+        private String getText(String key) {
+            return resources.getString(key);
+        }
+    }
+
 }
