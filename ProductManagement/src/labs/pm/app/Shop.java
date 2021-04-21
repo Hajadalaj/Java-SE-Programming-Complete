@@ -36,24 +36,32 @@ public class Shop {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        ProductManager pm = new ProductManager(Locale.US);
-        
-        Product p1 = pm.createProduct(101, "Chopp", BigDecimal.valueOf(3.99), Rating.NOT_RATED, true);
-        pm.printProductReport();
-        
-        p1 = pm.reviewProduct(p1, Rating.FIVE_STAR, "The best chopp of the world");
-        p1 = pm.reviewProduct(p1, Rating.FIVE_STAR, "So cold");
-        p1 = pm.reviewProduct(p1, Rating.FIVE_STAR, "The better of the country");
-        p1 = pm.reviewProduct(p1, Rating.ONE_STAR, "Very strong");
-        p1 = pm.reviewProduct(p1, Rating.ONE_STAR, "I don't like that");
-        pm.printProductReport();
-        
-//        Product p3 = pm.createProduct(103, "Cake", BigDecimal.valueOf(3.99), Rating.NOT_RATED, LocalDate.now().plusDays(2));
-//        pm.printProductReport();
-//        p3 = pm.reviewProduct(p3, Rating.ONE_STAR, "No taste of 'grandma' cake");
-//        pm.printProductReport();
-        
-//        Product p2 = pm.createProduct(102, "Coffee", BigDecimal.valueOf(1.99), Rating.FOUR_STAR, false);
+        ProductManager pm = new ProductManager(Locale.UK);
+
+//        Product p1 = pm.createProduct(101, "Chopp", BigDecimal.valueOf(3.99), Rating.NOT_RATED, true);
+//        pm.printProductReport(101);
+
+        pm.createProduct(101, "Chopp", BigDecimal.valueOf(3.99), Rating.NOT_RATED, true);
+        pm.reviewProduct(101, Rating.FIVE_STAR, "The best chopp of the world");
+        pm.reviewProduct(101, Rating.FIVE_STAR, "So cold");
+        pm.reviewProduct(101, Rating.FIVE_STAR, "The better of the country");
+        pm.reviewProduct(101, Rating.ONE_STAR, "Very strong");
+        pm.reviewProduct(101, Rating.ONE_STAR, "I don't like that");
+        pm.printProductReport(101);
+
+        Product p3 = pm.createProduct(103, "Cake", BigDecimal.valueOf(3.99), Rating.NOT_RATED, LocalDate.now().plusDays(3));
+        pm.printProductReport(p3);
+        p3 = pm.reviewProduct(p3, Rating.ONE_STAR, "No taste of 'grandma' cake");
+        p3 = pm.reviewProduct(p3, Rating.THREE_STAR, "Is good");
+        p3 = pm.reviewProduct(p3, Rating.FIVE_STAR, "Delicious");
+        pm.printProductReport(p3);
+
+        Product p2 = pm.createProduct(102, "Coffee", BigDecimal.valueOf(1.99), Rating.FOUR_STAR, false);
+        p2 = pm.reviewProduct(p2, Rating.FIVE_STAR, "Hot and taste =P");
+        p2 = pm.reviewProduct(p2, Rating.THREE_STAR, "Very well");
+        p2 = pm.reviewProduct(p2, Rating.FOUR_STAR, ":)");
+        pm.printProductReport(p2);
+
 //        Product p3 = pm.createProduct(103, "Cake", BigDecimal.valueOf(3.99), Rating.FIVE_STAR, LocalDate.now().plusDays(2));
 //        Product p4 = pm.createProduct(105, "Vodka", BigDecimal.valueOf(10.00), Rating.FIVE_STAR, true);
 //        Product p5 = p3.applyRating(Rating.THREE_STAR);

@@ -37,6 +37,7 @@ public final class Drink extends Product {
      *
      * @return the value of alcoholic
      */
+    @Override
     public boolean isAlcoholic() {
         return alcoholic;
     }
