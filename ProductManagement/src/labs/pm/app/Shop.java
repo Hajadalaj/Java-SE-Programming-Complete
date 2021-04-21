@@ -40,7 +40,6 @@ public class Shop {
 
 //        Product p1 = pm.createProduct(101, "Chopp", BigDecimal.valueOf(3.99), Rating.NOT_RATED, true);
 //        pm.printProductReport(101);
-
         pm.createProduct(101, "Chopp", BigDecimal.valueOf(3.99), Rating.NOT_RATED, true);
         pm.reviewProduct(101, Rating.FIVE_STAR, "The best chopp of the world");
         pm.reviewProduct(101, Rating.FIVE_STAR, "So cold");
@@ -62,11 +61,12 @@ public class Shop {
         p2 = pm.reviewProduct(p2, Rating.FOUR_STAR, ":)");
 //        pm.printProductReport(p2);
 
-        Comparator<Product> sorteByRating = (i1, i2) ->  i2.getRating().ordinal() - i1.getRating().ordinal();
-        Comparator<Product> sorteByPrice = (i1, i2) ->  i2.getPrice().compareTo(i1.getPrice());
+        Comparator<Product> sorteByRating = (i1, i2) -> i2.getRating().ordinal() - i1.getRating().ordinal();
+        Comparator<Product> sorteByPrice = (i1, i2) -> i2.getPrice().compareTo(i1.getPrice());
 
-        pm.printProducts(sorteByRating.thenComparing(sorteByPrice));
-        pm.printProducts(sorteByPrice.thenComparing(sorteByRating).reversed());
+        pm.printProducts(p -> p.getDiscount().floatValue() == 0, sorteByRating.thenComparing(sorteByPrice));
+        pm.getDiscounts().forEach((rating, discount) -> System.out.println(rating + "\t" + discount));
+//        pm.printProducts(sorteByPrice.thenComparing(sorteByRating).reversed());
 
 //        Product p3 = pm.createProduct(103, "Cake", BigDecimal.valueOf(3.99), Rating.FIVE_STAR, LocalDate.now().plusDays(2));
 //        Product p4 = pm.createProduct(105, "Vodka", BigDecimal.valueOf(10.00), Rating.FIVE_STAR, true);
